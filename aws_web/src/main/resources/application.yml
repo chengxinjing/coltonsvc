@@ -2,11 +2,9 @@ spring:
   profiles:
     active: dev
 aws:
-  accessKey: AKIA2BNIF6PHNXYCY6XB
-  secretKey: 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
-  credential: F:\\colton_test\\src\\main\\resources\\credentials.properties
+  credential: /tmp/credentials.properties
   region: ap-northeast-1
   bucket:
     url: https://{bucketName}.s3-{region}.amazonaws.com/
   download:
-    home: F:\\colton_test\\
+    home: /opt/colton/download
