@@ -1,0 +1,7 @@
+aws:
+  credential: /tmp/credentials.properties
+  region: ap-northeast-1
+  bucket:
+    url: https://{bucketName}.s3-{region}.amazonaws.com/
+    download:
+      home: /opt/colton/download
