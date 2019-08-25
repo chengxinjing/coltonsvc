@@ -1,3 +1,4 @@
+#!/bin/bash
 currentDir=`pwd`
 # get the source code
 git clone https://github.com/chengxinjing/coltonsvc.git
