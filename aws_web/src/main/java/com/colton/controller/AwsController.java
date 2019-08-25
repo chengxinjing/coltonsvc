@@ -58,7 +58,7 @@ public class AwsController {
 
     @ApiOperation("list S3Object on S3")
     @ApiImplicitParam(name = "bucketName", value = "bucketName", paramType = "query", dataType = "String")
-    @GetMapping(value = "files")
+    @GetMapping(value = "objects")
     public ObjectListing listObjects(@RequestParam("bucketName") String bucketName) {
         return awsService.listObjects(bucketName);
     }
