@@ -69,7 +69,8 @@ public class AppConfig {
                 return false;
             }
         } catch (Exception ex) {
-            log.warn(ex.getMessage(), ex);
+            if (log.isDebugEnabled())
+             log.warn(ex.getMessage(), ex);
             return false;
         }
         return true;
