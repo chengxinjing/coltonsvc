@@ -1,6 +1,6 @@
 package com.colton.batch.loader;
 
-import com.colton.batch.domain.UserInfo;
+import com.colton.entity.user.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
