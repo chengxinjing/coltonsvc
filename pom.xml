@@ -7,7 +7,7 @@
     <groupId>Aws_Colton</groupId>
     <artifactId>aws_colton</artifactId>
     <packaging>pom</packaging>
-    <version>1.0</version>
+    <version>1.0.0</version>
     <modules>
         <module>aws_entity</module>
         <module>aws_web</module>

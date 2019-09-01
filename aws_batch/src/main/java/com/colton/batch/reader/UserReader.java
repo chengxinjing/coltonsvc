@@ -6,9 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.NonTransientResourceException;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Iterator;
@@ -30,7 +27,7 @@ public class UserReader implements ItemReader<UserInfo> {
     }
 
     @Override
-    public UserInfo read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+    public UserInfo read() {
         try {
             lock.lock();
             if (userInfoIterator.hasNext())

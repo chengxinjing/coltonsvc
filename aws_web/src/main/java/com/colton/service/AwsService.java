@@ -7,11 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -46,11 +45,19 @@ public class AwsService {
     }
 
 
-    public void download(String key, String bucketName) throws MalformedURLException {
+    public byte[] download(String key, String bucketName) throws MalformedURLException {
         String actualUrl = formatUrl(key, bucketName);
         URL url = new URL(actualUrl + key);
         PresignedUrlDownloadRequest request = new PresignedUrlDownloadRequest(url);
-        amazonS3.download(request, new File(downloadHome + key));
+        File destFile = new File(downloadHome + key);
+        amazonS3.download(request, destFile);
+        byte[] bytes = null;
+        try {
+            bytes = FileCopyUtils.copyToByteArray(destFile);
+        } catch (IOException e) {
+            log.warn(e.getMessage(),e);
+        }
+        return bytes;
     }
 
     private String formatUrl(String key, String bucketName) {
@@ -75,7 +82,7 @@ public class AwsService {
         return objectListing;
     }
 
-    public void deleteObject(String bucketName,String key) {
-        amazonS3.deleteObject(bucketName,key);
+    public void deleteObject(String bucketName, String key) {
+        amazonS3.deleteObject(bucketName, key);
     }
 }
