@@ -1,0 +1,13 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:gfe="http://www.springframework.org/schema/geode"
+       xmlns:gfe-data="http://www.springframework.org/schema/data/geode"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/geode https://www.springframework.org/schema/geode/spring-geode.xsd">
+
+    <gfe:client-cache id="MAIN" pool-name="userPool"  />
+    <gfe:pool id="userPool" max-connections="${geode.pool.max-connections}" ping-interval="${geode.pool.ping-interval}" subscription-enabled="true" >
+        <gfe:locator host = "${geode.locator.hostname}" port="${geode.locator.port}"/>
+    </gfe:pool>
+    <gfe:client-region id="userInfo" name="User" pool-name="userPool" cache-ref="MAIN" shortcut="CACHING_PROXY"/>
+</beans>

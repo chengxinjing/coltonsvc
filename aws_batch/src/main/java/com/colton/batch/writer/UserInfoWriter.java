@@ -1,7 +1,7 @@
 package com.colton.batch.writer;
 
-import com.colton.batch.domain.UserInfo;
-import com.colton.batch.repository.UserInfoRepository;
+import com.colton.entity.repository.UserInfoRepository;
+import com.colton.entity.user.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;

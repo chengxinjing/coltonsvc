@@ -1,0 +1,10 @@
+server:
+  port: 9092
+source:
+  file: UserInfo.{latestDate}.txt
+  download:
+    url: http://localhost:8080/aws/download/
+    home: E:\coltonsvc
+spring:
+  profiles:
+    active: geode

@@ -1,0 +1,13 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:gfe="http://www.springframework.org/schema/geode"
+       xmlns:gfe-data="http://www.springframework.org/schema/data/geode"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/geode https://www.springframework.org/schema/geode/spring-geode.xsd">
+    <gfe:cache id="gemfireCache"   critical-heap-percentage="90" eviction-heap-percentage="80" />
+   <gfe:cache-server port="${geode.server.port}"  bind-address="${geode.server.hostname}" cache-ref="gemfireCache" id="MAIN"  max-threads="5" />
+    <gfe:partitioned-region id="User" cache-ref="gemfireCache" name="User" shortcut="PARTITION_PERSISTENT" copies="1" disk-store-ref="UserInfo_Disk"  local-max-memory="12" total-buckets="5" />
+    <gfe:disk-store id="UserInfo_Disk">
+        <gfe:disk-dir location="${geode.server.disk.location}"/>
+    </gfe:disk-store>
+</beans>

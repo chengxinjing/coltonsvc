@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,13 +48,20 @@ public class AwsController {
     }
 
     @ApiOperation("download file from aws S3")
-    @ApiImplicitParam(name = "request", value = "bucketName", required = true, dataType = "AwsRequestEntity")
     @PostMapping("download")
-    public String download(@RequestBody AwsRequestEntity request) throws MalformedURLException {
+    public byte[] download(@RequestParam("fileName") String fileName, @RequestParam("token") String token, @RequestParam(defaultValue = "coltoncheng") String bucketName) throws MalformedURLException {
+        if (validateToken(fileName, token)) {
+            return awsService.download(fileName, bucketName);
+        }
+        return null;
+    }
 
-        awsService.download(request.getFileName(), request.getBucketName());
-        return format("download %s file successfully", request.getFileName());
+    private boolean validateToken(String fileName, String token) {
 
+        if (token.equals(Base64Utils.encodeToString(fileName.getBytes()))) {
+            return true;
+        }
+        return false;
     }
 
     @ApiOperation("list S3Object on S3")
@@ -68,7 +76,7 @@ public class AwsController {
     @DeleteMapping("deleteObject")
     public String deleteObject(@RequestBody AwsRequestEntity request) {
         awsService.deleteObject(request.getBucketName(), request.getFileName());
-        return format("delete %s successfully in %s",  request.getFileName(),request.getBucketName());
+        return format("delete %s successfully in %s", request.getFileName(), request.getBucketName());
     }
 
     private String format(String format, String... args) {
