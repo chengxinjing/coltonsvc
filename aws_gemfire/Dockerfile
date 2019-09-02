@@ -13,6 +13,8 @@ rm -f apache-geode*.tgz && \
 ln -sf /gemfire/apache-geode-1.9.0/bin/gfsh /usr/bin/gfsh
 
 ENV LOCATORS locators
+ENV SERVER_NAME MAIN
+EXPOSE 31431 31435 8092 1099
 #ENV PULSE_PORT 8092
 #EXPOSE ${PULSE_PORT}
 ENTRYPOINT ["/gemfire/bin/startAwsGemfireService.sh"]
