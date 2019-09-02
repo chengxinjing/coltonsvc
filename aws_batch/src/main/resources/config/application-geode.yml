@@ -1,0 +1,7 @@
+geode:
+  locator:
+    hostname: localhost
+    port: 31431
+  pool:
+    max-connections: 20
+    ping-interval: 500

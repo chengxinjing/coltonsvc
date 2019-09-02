@@ -1,0 +1,6 @@
+geode:
+  server:
+    port: 31435
+    hostname: localhost
+    disk:
+      location: F:\\coltonsvc\\aws_gemfire\\
