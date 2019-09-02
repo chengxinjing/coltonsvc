@@ -7,8 +7,8 @@ mkdir bin && \
 mv *.sh ./bin; \
 # install the requirement software
 yum install wget which -y; \
-wget http://mirror.bit.edu.cn/apache/geode/1.9.0/apache-geode-1.9.0.tgz && \
-tar -zxvf apache-geode-1.9.0 && \
+wget https://www-us.apache.org/dist/geode/1.9.0/apache-geode-1.9.0.tgz && \
+tar -zxvf apache-geode-1.9.0.tgz && \
 rm -f apache-geode*.tgz && \
 ln -sf /gemfire/apache-geode-1.9.0/bin/gfsh /usr/bin/gfsh
 
