@@ -9,5 +9,5 @@
     <gfe:pool id="userPool" max-connections="${geode.pool.max-connections}" ping-interval="${geode.pool.ping-interval}" subscription-enabled="true" >
         <gfe:locator host = "${geode.locator.hostname}" port="${geode.locator.port}"/>
     </gfe:pool>
-    <gfe:client-region id="userInfo" name="User" pool-name="userPool" cache-ref="MAIN" shortcut="CACHING_PROXY"/>
+    <gfe:client-region id="userInfo" name="User"  pool-name="userPool" cache-ref="MAIN" shortcut="CACHING_PROXY"/>
 </beans>

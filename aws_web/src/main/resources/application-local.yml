@@ -1,0 +1,7 @@
+aws:
+  credential: E:\coltonsvc\.idea\credentials.properties
+  region: ap-northeast-1
+  bucket:
+    url: https://{bucketName}.s3-{region}.amazonaws.com/
+  download:
+    home: E:\coltonsvc\download
