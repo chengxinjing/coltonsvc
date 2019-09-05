@@ -1,21 +1,20 @@
 package com.colton.batch.loader;
 
 import com.colton.entity.user.UserInfo;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @Component
-@Slf4j
+@Log4j2
 public class UserInfoLoader {
 
     private static final int NAME_INDEX = 0;
@@ -30,9 +29,7 @@ public class UserInfoLoader {
     public List<UserInfo> loadUserInfo(String path) {
         List<UserInfo> userInfos = new ArrayList<>();
         int lineCount = 0;
-        BufferedReader reader = null;
-        try {
-            reader = Files.newBufferedReader(Paths.get(path));
+        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             String header = reader.readLine();
             log.info("the file header is  {}", header);
             while (true) {
@@ -42,11 +39,11 @@ public class UserInfoLoader {
                     break;
                 UserInfo userInfo = mapperLine(line);
                 userInfos.add(userInfo);
-                log.info("currently load {} userInfo",lineCount);
+                log.info("currently load {} userInfo", lineCount);
             }
         } catch (IOException e) {
-            log.info("When load file :{}",path);
-            log.warn(e.getMessage(),e);
+            log.info("When load file :{}", path);
+            log.warn(e.getMessage(), e);
         }
 
         return userInfos.isEmpty() ? Collections.emptyList() : userInfos;

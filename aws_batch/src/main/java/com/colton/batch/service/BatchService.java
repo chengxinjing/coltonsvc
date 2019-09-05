@@ -12,6 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
@@ -45,24 +46,24 @@ public class BatchService {
 
     private Map<String, JobParameter> map = new LinkedHashMap<>();
 
-    public BatchResponse doUserInfoBatch(String jobName) {
-        String feedName = findFeedFile(jobName);
+    public BatchResponse doUserInfoBatch(String jobName, String fileDate, boolean forceDownload) {
+        String feedName = findFeedFile(jobName, fileDate,forceDownload);
         Job job = applicationContext.getBean(jobName, Job.class);
         BatchResponse response = null;
         try {
             response = new BatchResponse();
             map.put(jobName, new JobParameter(UUID.randomUUID().toString()));
-            map.put("filePath",new JobParameter(feedName));
+            map.put("filePath", new JobParameter(feedName));
             JobParameters parameters = new JobParameters(map);
             JobExecution execution = jobLauncher.run(job, parameters);
 
             response.setDate(new Date());
-            if (execution.getExitStatus() == ExitStatus.FAILED) {
-                response.setStatus(Status.FAIL);
-            } else if (execution.getExitStatus() == ExitStatus.EXECUTING) {
+            if (execution.getExitStatus().equals(ExitStatus.COMPLETED) && execution.getStatus() == BatchStatus.COMPLETED) {
+                response.setStatus(Status.SUCCESS);
+            } else if (execution.getExitStatus().equals(ExitStatus.EXECUTING)) {
                 response.setStatus(Status.RUNNING);
             } else {
-                response.setStatus(Status.SUCCESS);
+                response.setStatus(Status.FAIL);
             }
 
         } catch (Exception e) {
@@ -73,10 +74,10 @@ public class BatchService {
         return response;
     }
 
-    private String findFeedFile(String jobName) {
+    private String findFeedFile(String jobName, String fileDate, boolean forceDownload) {
         //TODO in future  finding the file based on jobName.
-        String filePath = getFilePath(downloadDest, fileName);
-        if (isExsit(filePath)) {
+        String filePath = getFilePath(downloadDest, fileName, fileDate);
+        if (isExsit(filePath) && !forceDownload) {
             return filePath;
         }
         downloadFile(filePath, dowloadUrl);
@@ -87,17 +88,17 @@ public class BatchService {
     private void downloadFile(String filePath, String dowloadUrl) {
         String extension = Files.getFileExtension(filePath);
         String nameWitoutExtension = Files.getNameWithoutExtension(filePath);
-        String filename = nameWitoutExtension+"."+extension;
+        String filename = nameWitoutExtension + "." + extension;
         String url = getUrl(filename, dowloadUrl);
-       log.info("Create Url -> {}",url);
+        log.info("Create Url -> {}", url);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         HttpEntity httpEntity = new HttpEntity(headers);
         try {
-            ResponseEntity<byte[]> responseEntity = restTemplate.exchange(url,HttpMethod.POST,httpEntity,byte[].class);
-            Files.write(responseEntity.getBody(),new File(filePath));
+            ResponseEntity<byte[]> responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, byte[].class);
+            Files.write(responseEntity.getBody(), new File(filePath));
         } catch (Exception e) {
-            throw  new RuntimeException(e);
+            throw new RuntimeException(e);
         }
 
     }
@@ -109,13 +110,15 @@ public class BatchService {
 
     private boolean isExsit(String filePath) {
         File file = new File(filePath);
-        if (file.exists()) {
+        if (file.exists() && file.isFile()) {
             return true;
         }
         return false;
     }
 
-    private String getFilePath(String downloadDest, String fileName) {
+    private String getFilePath(String downloadDest, String fileName, String fileDate) {
+        if (!StringUtils.isEmpty(fileDate))
+            fileName = fileName.replace("{latestDate}", fileDate);
         return downloadDest + File.separator + fileName.replace("{latestDate}", LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE));
     }
 }
