@@ -27,12 +27,10 @@ if [ `echo $?` != 0 ]; then
  sudo yum install docker.x86_64 -y
  sudo systemctl enable docker
 fi
-sudo gpasswd -a ${USER} docker
 if [ `echo $?` != 0 ]; then
    sudo groupadd docker
-   sudo gpasswd -a ${USER} docker
-
 fi
+sudo gpasswd -a ${USER} docker
 sudo systemctl restart docker
 
 git clone https://github.com/chengxinjing/coltonsvc.git
@@ -60,15 +58,18 @@ docker build -t aws_batch:v1.0.${version} .
 #run the container
 cd ~
 absoulteDir=`pwd`
-mkdir -p batch/log
-mkdir -p gemfire/log
-mkdir -p web/log && mkdir web/config
+mkdir -p batch/log && mkdir batch/bin && mkdir batch/feed
+mkdir -p gemfire/log && mkdir gemfire/bin
+mkdir -p web/log && mkdir gemfire/bin && mkdir web/config
+
+echo "accessKey=" > $absoulteDir/web/config/credentials.properties
+echo "secretKey=" >> $absoulteDir/web/config/credentials.properties
 
 hostname=`hostname -I | awk '{print $1}'`
 url="http://${hostname}:8080/aws/download/"
 
-docker run -d  -v $absoulteDir/gemfire/log:/gemfire/log --name gemfire_${version} -p 31431:31431 -p 8092:8092  -P -e LOCATORS=localhost[31431] aws_gemfire:v1.0.${version}
+docker run -d  -v $absoulteDir/gemfire/log:/gemfire/log -v $absoulteDir/gemfire/bin:/gemfire/bin --name gemfire_${version} -p 31431:31431 -p 8092:8092  -P -e LOCATORS=localhost[31431] aws_gemfire:v1.0.${version}
 
-docker run -d -v $absoulteDir/batch/log:/batch/log --name batch_${version} -p 9092:9092 -e LOCATOR_HOST=gemfire -e LOCATOR_PORT=31431 -e DOWNLOAD_URL=${url}  --link gemfire_${version}:gemfire aws_batch:v1.0.${version}
+docker run -d -v $absoulteDir/batch/log:/batch/log -v $absoulteDir/batch/feed:/batch/feed -v $absoulteDir/batch/bin:/batch/bin --name batch_${version} -p 9092:9092 -e LOCATOR_HOST=gemfire -e LOCATOR_PORT=31431 -e DOWNLOAD_URL=${url}  --link gemfire_${version}:gemfire aws_batch:v1.0.${version}
 
-docker run -d -v $absoulteDir/web/log:/web/log -v $absoulteDir/web/config:/web/config --name web_${version} -p 8080:8080 aws_web:v1.0.${version}
+docker run -d -v $absoulteDir/web/log:/web/log -v $absoulteDir/web/bin:/web/bin -v $absoulteDir/web/config:/web/config --name web_${version} -p 8080:8080 aws_web:v1.0.${version}
