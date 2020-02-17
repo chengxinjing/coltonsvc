@@ -2,6 +2,7 @@ package com.colton.batch.service;
 
 import com.colton.batch.domain.BatchResponse;
 import com.colton.batch.domain.Status;
+import com.colton.batch.model.BatchRequestEntity;
 import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
@@ -46,8 +47,8 @@ public class BatchService {
 
     private Map<String, JobParameter> map = new LinkedHashMap<>();
 
-    public BatchResponse doUserInfoBatch(String jobName, String fileDate, boolean forceDownload) {
-        String feedName = findFeedFile(jobName, fileDate,forceDownload);
+    public BatchResponse doUserInfoBatch(String jobName, String fileDate, boolean forceDownload,String bucketName) {
+        String feedName = findFeedFile(jobName, fileDate,forceDownload,bucketName);
         Job job = applicationContext.getBean(jobName, Job.class);
         BatchResponse response = null;
         try {
@@ -74,22 +75,22 @@ public class BatchService {
         return response;
     }
 
-    private String findFeedFile(String jobName, String fileDate, boolean forceDownload) {
+    private String findFeedFile(String jobName, String fileDate, boolean forceDownload,String bucketName) {
         //TODO in future  finding the file based on jobName.
         String filePath = getFilePath(downloadDest, fileName, fileDate);
         if (isExsit(filePath) && !forceDownload) {
             return filePath;
         }
-        downloadFile(filePath, dowloadUrl);
+        downloadFile(filePath, dowloadUrl,bucketName);
         return filePath;
 
     }
 
-    private void downloadFile(String filePath, String dowloadUrl) {
+    private void downloadFile(String filePath, String dowloadUrl,String bucketName) {
         String extension = Files.getFileExtension(filePath);
         String nameWitoutExtension = Files.getNameWithoutExtension(filePath);
         String filename = nameWitoutExtension + "." + extension;
-        String url = getUrl(filename, dowloadUrl);
+        String url = getUrl(filename, dowloadUrl,bucketName);
         log.info("Create Url -> {}", url);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -103,9 +104,9 @@ public class BatchService {
 
     }
 
-    private String getUrl(String filename, String dowloadUrl) {
+    private String getUrl(String filename, String dowloadUrl,String bucketName) {
         String token = Base64Utils.encodeToString(filename.getBytes());
-        return dowloadUrl + "?fileName=" + filename + "&token=" + token;
+        return dowloadUrl + "?fileName=" + filename + "&token=" + token +"&bucketName=" + bucketName ;
     }
 
     private boolean isExsit(String filePath) {
@@ -120,5 +121,10 @@ public class BatchService {
         if (!StringUtils.isEmpty(fileDate))
             fileName = fileName.replace("{latestDate}", fileDate);
         return downloadDest + File.separator + fileName.replace("{latestDate}", LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE));
+    }
+
+    public BatchResponse doUserInfoBatch(BatchRequestEntity requestEntity) {
+
+        return doUserInfoBatch(requestEntity.getJobName(),requestEntity.getFileDate(),requestEntity.isForceDownload(),requestEntity.getBucketName());
     }
 }
