@@ -18,10 +18,10 @@ public class BatchController {
     private BatchService batchService;
 
     @ApiOperation("run batch")
-    @GetMapping("run")
-    public BatchResponse doUserInfoBatch(@RequestBody BatchRequestEntity requestEntity) {
-        log.info("job {} is going to run", requestEntity.getJobName());
-        BatchResponse response = batchService.doUserInfoBatch(requestEntity);
+    @PostMapping("run")
+    public BatchResponse doUserInfoBatch(@RequestBody BatchRequestEntity batchRequestEntity) {
+        log.info("job {} is going to run", batchRequestEntity.getJobName());
+        BatchResponse response = batchService.doUserInfoBatch(batchRequestEntity);
 
         return response;
     }
