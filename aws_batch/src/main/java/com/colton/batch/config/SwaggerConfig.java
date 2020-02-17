@@ -19,7 +19,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2).apiInfo(new ApiInfoBuilder()
                 .title("Batch API ")
                 .description("batch api")
-                .version("1.0.0").contact(new Contact("Colton","https://github.com/chengxinjing/coltonsvc/tree/master/aws_web","530501797@qq.com"))
+                .version("1.0.0").contact(new Contact("Colton","https://github.com/chengxinjing/coltonsvc/tree/master/aws_batch","530501797@qq.com"))
                 .build()).select().apis(RequestHandlerSelectors.basePackage("com.colton.batch.controller"))
                 .paths(PathSelectors.any()).build();
     }
