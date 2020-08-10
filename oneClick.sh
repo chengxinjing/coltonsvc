@@ -1,6 +1,6 @@
 #!/bin/bash
 #install requirement software
-echo "test"
+echo "test version2"
 isInstall(){
   type $1
   if [ `echo $?` != 0 ]; then
